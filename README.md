@@ -1,3 +1,8 @@
+#สมาชิกในกลุ่ม 2 คน
+นายธนวัฒน์ สมบัติกำไร<br>
+นายภุวดล ทองรอง<br>
+<br>
+
 # STM32F411RE Moisture Monitoring System
 
 ## Project Overview
