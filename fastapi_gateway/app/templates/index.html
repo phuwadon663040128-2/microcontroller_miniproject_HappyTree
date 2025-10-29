@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STM32 Telemetry Dashboard</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>STM32 -> ESP8266 -> FastAPI Telemetry</h1>
+      <section id="status">
+        <p><strong>Connection to Uvicorn:</strong> <span id="connection-state">Connecting…</span></p>
+        <p><strong>Last update:</strong> <span id="last-update">N/A</span></p>
+      </section>
+      <section>
+        <h2>Latest Payload</h2>
+        <pre id="payload">{{ latest | tojson(indent=2) if latest else "Waiting for data…" }}</pre>
+      </section>
+    </main>
+
+    <script>
+      const connectionState = document.getElementById("connection-state");
+      const lastUpdate = document.getElementById("last-update");
+      const payloadPre = document.getElementById("payload");
+
+      function updateUI(data) {
+        payloadPre.textContent = JSON.stringify(data, null, 2);
+        lastUpdate.textContent = new Date().toLocaleTimeString();
+      }
+
+      const es = new EventSource("/telemetry/stream");
+      es.onopen = () => {
+        connectionState.textContent = "Connected";
+      };
+      es.onmessage = (event) => {
+        const payload = JSON.parse(event.data);
+        updateUI(payload);
+      };
+      es.onerror = () => {
+        connectionState.textContent = "Reconnecting…";
+      };
+    </script>
+  </body>
+</html>
